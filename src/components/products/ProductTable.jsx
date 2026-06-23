@@ -40,10 +40,10 @@ export default function ProductTable({ onDelete, onEdit, products }) {
               <td>
                 <div className="product-thumb">
                   {getProductImage(product) ? (
-                    <img src={product.imageUrl} alt={product.name} />
-                  ) : (
-                    <span>SW</span>
-                  )}
+  <img src={product.imageUrl} alt={product.name} />
+) : (
+  <span>SW</span>
+)}
                 </div>
               </td>
               <td>
