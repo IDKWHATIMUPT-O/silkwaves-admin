@@ -5,7 +5,7 @@ import Dashboard from './pages/Dashboard.jsx';
 import AddProduct from './pages/AddProduct.jsx';
 import ManageProducts from './pages/ManageProducts.jsx';
 import { getProducts } from './services/productsApi.js';
-
+import Login from './pages/Login.jsx';
 const NAV_ITEMS = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'add-product', label: 'Add Product', icon: PackagePlus },
@@ -14,6 +14,9 @@ const NAV_ITEMS = [
 
 export default function App() {
   const [activePage, setActivePage] = useState('dashboard');
+  const [isLoggedIn, setIsLoggedIn] = useState(
+  localStorage.getItem('admin-auth') === 'true'
+);
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -41,14 +44,39 @@ export default function App() {
     () => NAV_ITEMS.find((item) => item.id === activePage)?.label || 'Dashboard',
     [activePage],
   );
+  if (!isLoggedIn) {
+return (
+<Login
+onLogin={()=>{
+localStorage.setItem(
+'admin-auth',
+'true'
+);
 
+setIsLoggedIn(true);
+}}
+/>
+);
+}
+function logout() {
+  localStorage.removeItem("admin-auth");
+  window.location.reload();
+}
   return (
     <AdminLayout
-      activePage={activePage}
-      navItems={NAV_ITEMS}
-      onNavigate={setActivePage}
-      pageTitle={pageTitle}
-    >
+activePage={activePage}
+navItems={NAV_ITEMS}
+onNavigate={setActivePage}
+pageTitle={pageTitle}
+
+onLogout={()=>{
+localStorage.removeItem(
+"admin-auth"
+);
+
+window.location.reload();
+}}
+>
       {activePage === 'dashboard' && (
         <Dashboard error={error} isLoading={isLoading} products={products} />
       )}
