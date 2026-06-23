@@ -80,17 +80,18 @@ export default function ProductForm({
     }
 
     setIsSubmitting(true);
+    console.log("API URL:", import.meta.env.VITE_API_BASE_URL);
 
     try {
       // ✅ CLEAN BACKEND-READY JSON OBJECT
       const product = {
-        title: formData.title,
-        price: Number(formData.price),
-        category: formData.category,
-        description: formData.description,
-        coverImage: formData.coverImage?.name || "",
-        galleryImages: formData.galleryImages.map(f => f.name)
-      };
+  title: formData.title,
+  price: Number(formData.price),
+  category: formData.category,
+  description: formData.description,
+  coverImage: formData.coverImage?.name || "",
+  galleryImages: formData.galleryImages.map(f => f.name)
+};
 
       // ✅ SEND TO RENDER BACKEND
       const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/products`, {
