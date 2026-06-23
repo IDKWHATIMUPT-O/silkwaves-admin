@@ -61,61 +61,105 @@ export default function ProductForm({
   }
 
   async function handleSubmit(event) {
-    event.preventDefault();
-    setFormError('');
+event.preventDefault();
 
-    if (!formData.title.trim() || !formData.price || !formData.category) {
-      setFormError('Title, price, and category are required.');
-      return;
-    }
+setFormError('');
 
-    if (!isEditing && !formData.coverImage) {
-      setFormError('A main cover image is required.');
-      return;
-    }
+if (!formData.title.trim()) {
+setFormError('Title is required');
+return;
+}
 
-    if (formData.galleryImages.length > 4) {
-      setFormError('Upload no more than 4 gallery images.');
-      return;
-    }
+if (!formData.price) {
+setFormError('Price is required');
+return;
+}
 
-    setIsSubmitting(true);
-    console.log("API URL:", import.meta.env.VITE_API_BASE_URL);
+if (!formData.coverImage) {
+setFormError('Cover image required');
+return;
+}
 
-    try {
-      // ✅ CLEAN BACKEND-READY JSON OBJECT
-      const product = {
-  title: formData.title,
-  price: Number(formData.price),
-  category: formData.category,
-  description: formData.description,
-  coverImage: formData.coverImage?.name || "",
-  galleryImages: formData.galleryImages.map(f => f.name)
-};
+setIsSubmitting(true);
 
-      // ✅ SEND TO RENDER BACKEND
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/products`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(product)
-      });
+try {
+const submitData = new FormData();
 
-      if (!res.ok) {
-        throw new Error('Failed to save product');
-      }
+```
+submitData.append(
+  "title",
+  formData.title
+);
 
-      await onSubmit(product);
+submitData.append(
+  "price",
+  formData.price
+);
 
-      setFormData(EMPTY_PRODUCT);
+submitData.append(
+  "category",
+  formData.category
+);
 
-    } catch (error) {
-      setFormError(error.message);
-    } finally {
-      setIsSubmitting(false);
-    }
+submitData.append(
+  "description",
+  formData.description
+);
+
+if (formData.coverImage) {
+  submitData.append(
+    "coverImage",
+    formData.coverImage
+  );
+}
+
+formData.galleryImages.forEach(
+  (file) => {
+    submitData.append(
+      "galleryImages",
+      file
+    );
   }
+);
+
+const res =
+  await fetch(
+```
+
+`${import.meta.env.VITE_API_BASE_URL}/products`,
+{
+method: "POST",
+body: submitData
+}
+;
+
+```
+const data =
+  await res.json();
+
+if (!res.ok) {
+  throw new Error(
+    data.error ||
+    "Upload failed"
+  );
+}
+
+await onSubmit(data);
+
+setFormData(
+  EMPTY_PRODUCT
+);
+```
+
+} catch (err) {
+setFormError(
+err.message
+);
+} finally {
+setIsSubmitting(false);
+}
+}
+
 
   return (
     <form className="product-form" onSubmit={handleSubmit}>
