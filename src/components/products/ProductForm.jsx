@@ -61,106 +61,79 @@ export default function ProductForm({
   }
 
   async function handleSubmit(event) {
-event.preventDefault();
+  event.preventDefault();
 
-setFormError('');
+  setFormError('');
 
-if (!formData.title.trim()) {
-setFormError('Title is required');
-return;
-}
-
-if (!formData.price) {
-setFormError('Price is required');
-return;
-}
-
-if (!formData.coverImage) {
-setFormError('Cover image required');
-return;
-}
-
-setIsSubmitting(true);
-
-try {
-const submitData = new FormData();
-
-```
-submitData.append(
-  "title",
-  formData.title
-);
-
-submitData.append(
-  "price",
-  formData.price
-);
-
-submitData.append(
-  "category",
-  formData.category
-);
-
-submitData.append(
-  "description",
-  formData.description
-);
-
-if (formData.coverImage) {
-  submitData.append(
-    "coverImage",
-    formData.coverImage
-  );
-}
-
-formData.galleryImages.forEach(
-  (file) => {
-    submitData.append(
-      "galleryImages",
-      file
-    );
+  if (!formData.title.trim()) {
+    setFormError('Title is required');
+    return;
   }
-);
 
-const res =
-  await fetch(
-```
+  if (!formData.price) {
+    setFormError('Price is required');
+    return;
+  }
 
-`${import.meta.env.VITE_API_BASE_URL}/products`,
-{
-method: "POST",
-body: submitData
+  if (!formData.coverImage) {
+    setFormError('Cover image required');
+    return;
+  }
+
+  setIsSubmitting(true);
+
+  try {
+    const submitData = new FormData();
+
+    submitData.append('title', formData.title);
+    submitData.append('price', formData.price);
+    submitData.append('category', formData.category);
+    submitData.append('description', formData.description);
+
+    if (formData.coverImage) {
+      submitData.append(
+        'coverImage',
+        formData.coverImage
+      );
+    }
+
+    formData.galleryImages.forEach((file) => {
+      submitData.append(
+        'galleryImages',
+        file
+      );
+    });
+
+    const res = await fetch(
+      `${import.meta.env.VITE_API_BASE_URL}/products`,
+      {
+        method: 'POST',
+        body: submitData,
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(
+        data.error || 'Upload failed'
+      );
+    }
+
+    // ← CHANGED HERE
+    onSubmit?.(data);
+
+    // ← ADDED THIS
+    setFormData(EMPTY_PRODUCT);
+
+  } catch (err) {
+    setFormError(
+      err.message || 'Failed to save product'
+    );
+  } finally {
+    setIsSubmitting(false);
+  }
 }
-;
-
-```
-const data =
-  await res.json();
-
-if (!res.ok) {
-  throw new Error(
-    data.error ||
-    "Upload failed"
-  );
-}
-
-await onSubmit(data);
-
-setFormData(
-  EMPTY_PRODUCT
-);
-```
-
-} catch (err) {
-setFormError(
-err.message
-);
-} finally {
-setIsSubmitting(false);
-}
-}
-
-
   return (
     <form className="product-form" onSubmit={handleSubmit}>
       {formError && <div className="form-alert">{formError}</div>}
