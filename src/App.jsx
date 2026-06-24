@@ -6,7 +6,12 @@ import AddProduct from './pages/AddProduct.jsx';
 import ManageProducts from './pages/ManageProducts.jsx';
 import { getProducts } from './services/productsApi.js';
 import Login from './pages/Login.jsx';
+import Orders from './pages/Orders.jsx';
 const NAV_ITEMS = [
+  {
+id: 'orders',
+label: 'Orders',
+icon: PackageSearch},
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'add-product', label: 'Add Product', icon: PackagePlus },
   { id: 'manage-products', label: 'Manage Products', icon: PackageSearch },
@@ -84,6 +89,7 @@ window.location.reload();
       {activePage === 'add-product' && (
         <AddProduct onCreated={loadProducts} onNavigate={setActivePage} />
       )}
+      {activePage==="orders"&&<Orders/>}
 
       {activePage === 'manage-products' && (
         <ManageProducts
