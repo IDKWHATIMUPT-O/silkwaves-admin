@@ -42,11 +42,70 @@ load();
 
 },[]);
 
-function updateStatus(
+async function updateStatus(
 id,
 status
 ){
 
+try{
+
+await fetch(
+
+`${import.meta.env.VITE_API_BASE_URL}/orders/${id}/status`,
+
+{
+
+method:
+'PUT',
+
+headers:{
+'Content-Type':
+'application/json'
+},
+
+body:
+JSON.stringify({
+status
+})
+
+}
+
+);
+
+setOrders(
+
+current=>
+
+current.map(
+
+o=>
+
+o.id===id
+
+? {
+...o,
+status
+}
+
+:o
+
+)
+
+);
+
+}
+
+catch(
+err
+){
+
+console.log(
+err
+);
+
+}
+
+}
 setOrders(
 current=>
 
@@ -261,4 +320,4 @@ Print
 
 </div>
 
-)}
+)
