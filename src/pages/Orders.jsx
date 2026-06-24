@@ -8,10 +8,20 @@ payment:"Pending",
 status:"Placed"
 }
 ];
+const header={
+textAlign:'left',
+padding:'16px',
+borderBottom:'1px solid #eee'
+};
+
+const cell={
+padding:'18px 16px',
+borderBottom:'1px solid #f4f4f4'
+};
 
 export default function Orders(){
 
-return(
+return (
 
 <div>
 
@@ -23,22 +33,51 @@ ORDERS
 Orders
 </h1>
 
+<div
+style={{
+background:'white',
+borderRadius:'20px',
+padding:'20px',
+marginTop:'24px',
+overflowX:'auto'
+}}
+>
+
 <table
 style={{
 width:'100%',
-marginTop:'20px'
+borderCollapse:'collapse'
 }}
 >
 
 <thead>
 
 <tr>
-<th>ID</th>
-<th>Customer</th>
-<th>Items</th>
-<th>Amount</th>
-<th>Payment</th>
-<th>Status</th>
+
+<th style={header}>
+ID
+</th>
+
+<th style={header}>
+Customer
+</th>
+
+<th style={header}>
+Items
+</th>
+
+<th style={header}>
+Amount
+</th>
+
+<th style={header}>
+Payment
+</th>
+
+<th style={header}>
+Status
+</th>
+
 </tr>
 
 </thead>
@@ -48,31 +87,32 @@ marginTop:'20px'
 {
 SAMPLE_ORDERS.map(
 (order)=>(
+
 <tr
 key={order.id}
 >
 
-<td>
+<td style={cell}>
 {order.id}
 </td>
 
-<td>
+<td style={cell}>
 {order.customer}
 </td>
 
-<td>
+<td style={cell}>
 {order.items}
 </td>
 
-<td>
+<td style={cell}>
 ₹{order.amount}
 </td>
 
-<td>
+<td style={cell}>
 {order.payment}
 </td>
 
-<td>
+<td style={cell}>
 {order.status}
 </td>
 
@@ -87,6 +127,7 @@ key={order.id}
 
 </div>
 
-);
+</div>
 
+);
 }
