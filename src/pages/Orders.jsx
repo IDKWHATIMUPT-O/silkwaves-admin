@@ -1,27 +1,54 @@
-const SAMPLE_ORDERS = [
-{
-id:"SW1001",
-customer:"Yogesh",
-items:2,
-amount:12999,
-payment:"Pending",
-status:"Placed"
-}
-];
-const header={
-textAlign:'left',
-padding:'16px',
-borderBottom:'1px solid #eee'
-};
-
-const cell={
-padding:'18px 16px',
-borderBottom:'1px solid #f4f4f4'
-};
+import { useEffect, useState } from 'react';
 
 export default function Orders(){
 
-return (
+const [orders,setOrders]=
+useState([]);
+
+const [loading,setLoading]=
+useState(true);
+
+useEffect(()=>{
+
+async function load(){
+
+try{
+
+const res=
+await fetch(
+`${import.meta.env.VITE_API_BASE_URL}/orders`
+);
+
+const data=
+await res.json();
+
+setOrders(data);
+
+}
+catch(err){
+
+console.log(err);
+
+}
+finally{
+
+setLoading(false);
+
+}
+
+}
+
+load();
+
+},[]);
+
+if(loading){
+
+return <h2>Loading...</h2>;
+
+}
+
+return(
 
 <div>
 
@@ -36,10 +63,8 @@ Orders
 <div
 style={{
 background:'white',
-borderRadius:'20px',
 padding:'20px',
-marginTop:'24px',
-overflowX:'auto'
+borderRadius:'20px'
 }}
 >
 
@@ -54,27 +79,21 @@ borderCollapse:'collapse'
 
 <tr>
 
-<th style={header}>
-ID
-</th>
+<th>ID</th>
 
-<th style={header}>
+<th>
 Customer
 </th>
 
-<th style={header}>
-Items
-</th>
-
-<th style={header}>
+<th>
 Amount
 </th>
 
-<th style={header}>
+<th>
 Payment
 </th>
 
-<th style={header}>
+<th>
 Status
 </th>
 
@@ -85,38 +104,35 @@ Status
 <tbody>
 
 {
-SAMPLE_ORDERS.map(
+orders.map(
 (order)=>(
 
 <tr
 key={order.id}
 >
 
-<td style={cell}>
+<td>
 {order.id}
 </td>
 
-<td style={cell}>
+<td>
 {order.customer}
 </td>
 
-<td style={cell}>
-{order.items}
-</td>
-
-<td style={cell}>
+<td>
 ₹{order.amount}
 </td>
 
-<td style={cell}>
+<td>
 {order.payment}
 </td>
 
-<td style={cell}>
+<td>
 {order.status}
 </td>
 
 </tr>
+
 )
 )
 }
@@ -130,4 +146,5 @@ key={order.id}
 </div>
 
 );
+
 }
