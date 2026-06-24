@@ -30,6 +30,7 @@ export default function ProductTable({ onDelete, onEdit, products }) {
             <th>Image</th>
             <th>Title</th>
             <th>Price</th>
+            <th>Stock</th>
             <th>Category</th>
             <th>Actions</th>
           </tr>
@@ -50,13 +51,30 @@ export default function ProductTable({ onDelete, onEdit, products }) {
                 <strong>{product.title}</strong>
                 <span className="table-muted">ID {product.id || product._id || 'pending'}</span>
               </td>
-              <td>{Number(product.price || 0).toLocaleString('en-IN', {
-                currency: 'INR',
-                style: 'currency',
-              })}</td>
               <td>
-                <span className="category-pill">{product.category}</span>
-              </td>
+{Number(
+product.price
+).toLocaleString(
+'en-IN',
+{
+style:'currency',
+currency:'INR'
+}
+)}
+</td>
+
+<td>
+
+{
+product.stock
+?? 0
+}
+
+</td>
+
+<td>
+{product.category}
+</td>
               <td>
                 <div className="table-actions">
                   <button aria-label={`Edit ${product.title}`} onClick={() => onEdit(product)} type="button">
