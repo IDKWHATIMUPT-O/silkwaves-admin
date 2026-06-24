@@ -8,6 +8,11 @@ useState([]);
 const [loading,setLoading]=
 useState(true);
 
+const [
+selectedOrder,
+setSelectedOrder
+]=useState(null);
+
 useEffect(()=>{
 
 async function load(){
@@ -25,11 +30,13 @@ await res.json();
 setOrders(data);
 
 }
+
 catch(err){
 
 console.log(err);
 
 }
+
 finally{
 
 setLoading(false);
@@ -55,8 +62,7 @@ await fetch(
 
 {
 
-method:
-'PUT',
+method:'PUT',
 
 headers:{
 'Content-Type':
@@ -87,36 +93,6 @@ o.id===id
 status
 }
 
-:o
-
-)
-
-);
-
-}
-
-catch(
-err
-){
-
-console.log(
-err
-);
-
-}
-
-}
-setOrders(
-current=>
-
-current.map(
-o=>
-
-o.id===id
-? {
-...o,
-status
-}
 : o
 
 )
@@ -125,9 +101,22 @@ status
 
 }
 
+catch(err){
+
+console.log(err);
+
+}
+
+}
+
 if(loading){
 
-return <h2>Loading…</h2>;
+return (
+
+<h2>
+Loading...
+</h2>
+);
 
 }
 
@@ -182,6 +171,7 @@ Actions
 <tbody>
 
 {
+
 orders.map(
 (order)=>(
 
@@ -219,6 +209,7 @@ order.amount
 
 <span
 className="category-pill"
+
 >
 
 {
@@ -289,6 +280,7 @@ setSelectedOrder(
 order
 )
 }
+
 >
 
 View
@@ -310,6 +302,7 @@ Print
 )
 
 )
+
 }
 
 </tbody>
@@ -318,6 +311,113 @@ Print
 
 </div>
 
+{
+
+selectedOrder && (
+
+<div
+style={{
+
+position:'fixed',
+
+inset:0,
+
+background:
+'rgba(0,0,0,.4)',
+
+display:'flex',
+
+alignItems:
+'center',
+
+justifyContent:
+'center'
+
+}}
+
+>
+
+<div
+style={{
+
+background:
+'white',
+
+padding:
+'24px',
+
+borderRadius:
+'20px',
+
+width:
+'500px'
+
+}}
+
+>
+
+<h2>
+Order Details
+</h2>
+
+<p>
+ID:
+{
+selectedOrder.id
+}
+</p>
+
+<p>
+Customer:
+{
+selectedOrder.customer
+}
+</p>
+
+<p>
+Amount:
+₹{
+selectedOrder.amount
+}
+</p>
+
+<p>
+Payment:
+{
+selectedOrder.payment
+}
+</p>
+
+<p>
+Status:
+{
+selectedOrder.status
+}
+</p>
+
+<button
+onClick={()=>
+setSelectedOrder(
+null
+)
+}
+
+>
+
+Close
+
+</button>
+
+</div>
+
 </div>
 
 )
+
+}
+
+</div>
+
+);
+
+}
