@@ -4,14 +4,19 @@ import { PRODUCT_CATEGORIES } from '../../constants/categories.js';
 import Button from '../ui/Button.jsx';
 
 const EMPTY_PRODUCT = {
-  title: '',
-  price: '',
-  category: PRODUCT_CATEGORIES[0],
-  description: '',
-  coverImage: null,
-  galleryImages: [],
-};
+title:'',
+price:'',
+stock:'',
 
+category:
+PRODUCT_CATEGORIES[0],
+
+description:'',
+
+coverImage:null,
+
+galleryImages:[]
+};
 function normalizeProduct(product) {
   return {
     title: product?.title || '',
@@ -87,6 +92,7 @@ export default function ProductForm({
 
     submitData.append('title', formData.title);
     submitData.append('price', formData.price);
+    submitData.append("stock",formData.stock);
     submitData.append('category', formData.category);
     submitData.append('description', formData.description);
 
@@ -160,6 +166,28 @@ export default function ProductForm({
             value={formData.price}
           />
         </label>
+        <label className="field">
+
+  <span>Stock</span>
+
+  <input
+    min="0"
+
+    onChange={(event)=>
+      updateField(
+        'stock',
+        event.target.value
+      )
+    }
+
+    placeholder="50"
+
+    type="number"
+
+    value={formData.stock}
+  />
+
+</label>
 
         <label className="field">
           <span>Category</span>
