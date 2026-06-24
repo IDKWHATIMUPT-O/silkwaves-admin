@@ -72,31 +72,29 @@ return <h2>Loading…</h2>;
 
 }
 
-return(
+return (
 
 <div>
 
 <span className="eyebrow">
-ORDERS
+ORDER MANAGEMENT
 </span>
 
 <h1>
-Orders
+Manage Orders
 </h1>
 
-<div
-className="table-shell"
->
+<div className="table-shell">
 
-<table
-className="product-table"
->
+<table className="product-table">
 
 <thead>
 
 <tr>
 
-<th>ID</th>
+<th>
+Order ID
+</th>
 
 <th>
 Customer
@@ -133,25 +131,43 @@ key={order.id}
 >
 
 <td>
+
+<strong>
 {order.id}
+</strong>
+
 </td>
 
 <td>
-{
-order.customer
-}
+
+{order.customer}
+
 </td>
 
 <td>
+
 ₹{
+Number(
 order.amount
+).toLocaleString(
+'en-IN'
+)
 }
+
 </td>
 
 <td>
+
+<span
+className="category-pill"
+>
+
 {
 order.payment
 }
+
+</span>
+
 </td>
 
 <td>
@@ -204,13 +220,29 @@ Cancelled
 
 <td>
 
-<button>
+<div
+className="table-actions"
+>
+
+<button
+onClick={()=>
+setSelectedOrder(
+order
+)
+}
+>
+
 View
+
 </button>
 
 <button>
+
 Print
+
 </button>
+
+</div>
 
 </td>
 
@@ -229,6 +261,4 @@ Print
 
 </div>
 
-);
-
-}
+)}
