@@ -3,12 +3,6 @@ import {
   LayoutDashboard,
   PackagePlus,
   PackageSearch,
-  Truck // ⭐ NEW
-} from 'lucide-react';
-import {
-  LayoutDashboard,
-  PackagePlus,
-  PackageSearch,
   Truck,
   Settings2
 } from "lucide-react";
