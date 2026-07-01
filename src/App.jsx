@@ -5,7 +5,13 @@ import {
   PackageSearch,
   Truck // ⭐ NEW
 } from 'lucide-react';
-
+import {
+  LayoutDashboard,
+  PackagePlus,
+  PackageSearch,
+  Truck,
+  Settings2
+} from "lucide-react";
 import AdminLayout from './components/layout/AdminLayout.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import AddProduct from './pages/AddProduct.jsx';
@@ -13,7 +19,7 @@ import ManageProducts from './pages/ManageProducts.jsx';
 import Orders from './pages/Orders.jsx';
 import Login from './pages/Login.jsx';
 import Fulfillment from './pages/Fulfillment.jsx'; // ⭐ NEW
-
+import Settings from "./pages/Settings.jsx";
 import { getProducts } from './services/productsApi.js';
 
 const NAV_ITEMS = [
@@ -47,8 +53,13 @@ const NAV_ITEMS = [
     id: 'manage-products',
     label: 'Manage Products',
     icon: PackageSearch
-  }
+  },
 
+  {
+    id: "settings",
+    label: "Settings",
+    icon: Settings2
+  }
 ];
 
 export default function App() {
@@ -200,7 +211,11 @@ export default function App() {
         <Fulfillment />
 
       }
+{activePage==="settings" &&
 
+<Settings/>
+
+}
       {activePage === 'manage-products' && (
 
         <ManageProducts
