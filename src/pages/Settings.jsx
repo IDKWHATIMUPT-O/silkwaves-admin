@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Settings() {
 
@@ -33,7 +33,35 @@ export default function Settings() {
     packageHeight: "8"
 
   });
+useEffect(() => {
 
+  async function loadSettings() {
+
+    try {
+
+      const res = await fetch(
+
+        `${import.meta.env.VITE_API_BASE_URL}/settings`
+
+      );
+
+      const data = await res.json();
+
+      setSettings(data);
+
+    }
+
+    catch (err) {
+
+      console.log(err);
+
+    }
+
+  }
+
+  loadSettings();
+
+}, []);
   function update(field, value) {
 
     setSettings(current => ({
@@ -46,19 +74,47 @@ export default function Settings() {
 
   }
 
-  function saveSettings() {
+  async function saveSettings() {
 
-    localStorage.setItem(
+  try {
 
-      "silkwaves-settings",
+    const res = await fetch(
 
-      JSON.stringify(settings)
+      `${import.meta.env.VITE_API_BASE_URL}/settings`,
+
+      {
+
+        method: "POST",
+
+        headers: {
+
+          "Content-Type": "application/json"
+
+        },
+
+        body: JSON.stringify(settings)
+
+      }
 
     );
+
+    if (!res.ok) {
+
+      throw new Error("Failed to save");
+
+    }
 
     alert("Settings Saved");
 
   }
+
+  catch (err) {
+
+    alert(err.message);
+
+  }
+
+}
 
   return (
 
