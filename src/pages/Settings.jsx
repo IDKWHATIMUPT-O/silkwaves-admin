@@ -41,7 +41,7 @@ useEffect(() => {
 
       const res = await fetch(
 
-        `${import.meta.env.VITE_API_BASE_URL}/settings`
+        `${import.meta.env.VITE_API_BASE_URL}/setting`
 
       );
 
@@ -80,7 +80,7 @@ useEffect(() => {
 
     const res = await fetch(
 
-      `${import.meta.env.VITE_API_BASE_URL}/settings`,
+      `${import.meta.env.VITE_API_BASE_URL}/setting`,
 
       {
 
