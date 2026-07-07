@@ -2,29 +2,45 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function getApiBaseUrl() {
   if (!API_BASE_URL) {
-    throw new Error('Missing VITE_API_BASE_URL. Add it to your local .env file.');
+    throw new Error(
+      "Missing VITE_API_BASE_URL. Add it to your local .env file."
+    );
   }
 
-  return API_BASE_URL.replace(/\/$/, '');
+  return API_BASE_URL.replace(/\/$/, "");
 }
 
 async function request(path, options = {}) {
-  const isFormData = options.body instanceof FormData;
-  const headers = isFormData
-    ? options.headers
-    : {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      };
+  const token = localStorage.getItem("token");
 
-  const response = await fetch(`${getApiBaseUrl()}${path}`, {
-    headers,
-    ...options,
-  });
+  const isFormData = options.body instanceof FormData;
+
+  const headers = {
+    ...(isFormData ? {} : { "Content-Type": "application/json" }),
+
+    ...(token
+      ? {
+          Authorization: `Bearer ${token}`,
+        }
+      : {}),
+
+    ...options.headers,
+  };
+
+  const response = await fetch(
+    `${getApiBaseUrl()}${path}`,
+    {
+      ...options,
+      headers,
+    }
+  );
 
   if (!response.ok) {
-    const errorText = await response.text().catch(() => '');
-    throw new Error(errorText || `Request failed with status ${response.status}`);
+    const errorText = await response.text().catch(() => "");
+
+    throw new Error(
+      errorText || `Request failed with status ${response.status}`
+    );
   }
 
   if (response.status === 204) {
@@ -35,25 +51,25 @@ async function request(path, options = {}) {
 }
 
 export function getProducts() {
-  return request('/products');
+  return request("/products");
 }
 
 export function createProduct(product) {
-  return request('/products', {
-    method: 'POST',
+  return request("/products", {
+    method: "POST",
     body: product,
   });
 }
 
 export function updateProduct(productId, product) {
   return request(`/products/${productId}`, {
-    method: 'PUT',
+    method: "PUT",
     body: product,
   });
 }
 
 export function deleteProduct(productId) {
   return request(`/products/${productId}`, {
-    method: 'DELETE',
+    method: "DELETE",
   });
 }

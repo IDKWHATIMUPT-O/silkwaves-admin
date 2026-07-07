@@ -62,12 +62,14 @@ export default function App() {
     useState('dashboard');
 
   const [isLoggedIn, setIsLoggedIn] =
-    useState(
-      localStorage.getItem('admin-auth') === 'true'
-    );
+useState(
+  !!localStorage.getItem("token")
+);
 
   const [products, setProducts] =
     useState([]);
+
+    const [dashboardData, setDashboardData] = useState(null);
 
   const [isLoading, setIsLoading] =
     useState(true);
@@ -105,12 +107,55 @@ export default function App() {
     }
 
   }
+async function loadDashboard() {
 
+  try {
+
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(
+
+      `${import.meta.env.VITE_API_BASE_URL}/dashboard`,
+
+      {
+
+        headers: {
+
+          Authorization: `Bearer ${token}`
+
+        }
+
+      }
+
+    );
+
+    if (!res.ok) {
+
+      throw new Error("Failed to load dashboard");
+
+    }
+
+    const data = await res.json();
+
+    console.log("Dashboard:", data);
+
+    setDashboardData(data);
+
+  }
+
+  catch (err) {
+
+    console.error(err);
+
+  }
+
+}
   useEffect(() => {
 
-    loadProducts();
+  loadProducts();
+  loadDashboard();
 
-  }, []);
+}, []);
 
   const pageTitle =
     useMemo(
@@ -132,14 +177,7 @@ export default function App() {
       <Login
 
         onLogin={() => {
-
-          localStorage.setItem(
-            'admin-auth',
-            'true'
-          );
-
           setIsLoggedIn(true);
-
         }}
 
       />
@@ -159,13 +197,11 @@ export default function App() {
 
       onLogout={() => {
 
-        localStorage.removeItem(
-          "admin-auth"
-        );
+  localStorage.removeItem("token");
 
-        window.location.reload();
+  setIsLoggedIn(false);
 
-      }}
+}}
 
     >
 
@@ -173,11 +209,15 @@ export default function App() {
 
         <Dashboard
 
-          error={error}
-          isLoading={isLoading}
-          products={products}
+  error={error}
 
-        />
+  isLoading={isLoading}
+
+  products={products}
+
+  dashboardData={dashboardData}
+
+/>
 
       )}
 

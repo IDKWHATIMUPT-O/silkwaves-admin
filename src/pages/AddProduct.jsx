@@ -2,16 +2,16 @@ import { CheckCircle2 } from 'lucide-react';
 import { useState } from 'react';
 import ProductForm from '../components/products/ProductForm.jsx';
 import Button from '../components/ui/Button.jsx';
-import { createProduct } from '../services/productsApi.js';
 
 export default function AddProduct({ onCreated, onNavigate }) {
   const [successMessage, setSuccessMessage] = useState('');
 
-  async function handleCreate(product) {
-    await createProduct(product);
-    setSuccessMessage('Product published to the backend API.');
-    await onCreated();
-  }
+  async function handleCreate() {
+  setSuccessMessage(
+    "Product published successfully."
+  );
+  await onCreated();
+}
 
   return (
     <section className="page-stack">

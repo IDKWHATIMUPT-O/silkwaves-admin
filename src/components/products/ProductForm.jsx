@@ -129,13 +129,17 @@ isEditing
 ? "PUT"
 : "POST";
 
-const res =
-await fetch(
-endpoint,
-{
-method,
-body:submitData
-}
+const token = localStorage.getItem("token");
+
+const res = await fetch(
+  endpoint,
+  {
+    method,
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    body: submitData
+  }
 );
     const data = await res.json();
 

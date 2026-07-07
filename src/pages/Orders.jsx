@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 export default function Orders() {
-
+const token = localStorage.getItem("token");
 const [orders,setOrders]=
 useState([]);
 
@@ -19,11 +19,14 @@ async function load(){
 
 try{
 
-const res=
-await fetch(
-`${import.meta.env.VITE_API_BASE_URL}/orders`
+const res = await fetch(
+  `${import.meta.env.VITE_API_BASE_URL}/orders`,
+  {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  }
 );
-
 const data=
 await res.json();
 
@@ -57,25 +60,19 @@ status
 try{
 
 await fetch(
+  `${import.meta.env.VITE_API_BASE_URL}/orders/${id}/status`,
+  {
+    method: "PATCH",
 
-`${import.meta.env.VITE_API_BASE_URL}/orders/${id}/status`,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
 
-{
-
-method:'PUT',
-
-headers:{
-'Content-Type':
-'application/json'
-},
-
-body:
-JSON.stringify({
-status
-})
-
-}
-
+    body: JSON.stringify({
+      status
+    })
+  }
 );
 
 setOrders(
@@ -108,7 +105,150 @@ console.log(err);
 }
 
 }
+async function downloadInvoice(orderId) {
 
+  try {
+
+    const res = await fetch(
+
+      `${import.meta.env.VITE_API_BASE_URL}/invoices/${orderId}`,
+
+      {
+
+        headers: {
+
+          Authorization: `Bearer ${token}`
+
+        }
+
+      }
+
+    );
+
+    if (!res.ok) {
+
+      throw new Error("Unable to generate invoice");
+
+    }
+
+    const blob = await res.blob();
+
+    const url = window.URL.createObjectURL(blob);
+
+    window.open(url, "_blank");
+
+  }
+
+  catch (err) {
+
+    alert(err.message);
+
+  }
+
+}
+async function createShipment(orderId) {
+
+  const res = await fetch(
+
+    `${import.meta.env.VITE_API_BASE_URL}/create-shipment/${orderId}`,
+
+    {
+
+      method: "POST",
+
+      headers: {
+
+        Authorization: `Bearer ${token}`
+
+      }
+
+    }
+
+  );
+
+  const data = await res.json();
+
+  alert(data.message || "Shipment Created");
+
+}
+
+async function syncShipment(orderId) {
+
+  const res = await fetch(
+
+    `${import.meta.env.VITE_API_BASE_URL}/sync-shipment/${orderId}`,
+
+    {
+
+      method: "POST",
+
+      headers: {
+
+        Authorization: `Bearer ${token}`
+
+      }
+
+    }
+
+  );
+
+  const data = await res.json();
+
+  alert(data.message || "Shipment Synced");
+
+}
+
+function trackShipment(orderId) {
+
+  window.open(
+
+    `${import.meta.env.VITE_API_BASE_URL}/track-shipment/${orderId}`,
+
+    "_blank"
+
+  );
+
+}
+
+function printLabel(orderId) {
+
+  window.open(
+
+    `${import.meta.env.VITE_API_BASE_URL}/shipping-label/${orderId}`,
+
+    "_blank"
+
+  );
+
+}
+
+async function cancelShipment(orderId) {
+
+  if (!window.confirm("Cancel shipment?")) return;
+
+  const res = await fetch(
+
+    `${import.meta.env.VITE_API_BASE_URL}/cancel-shipment/${orderId}`,
+
+    {
+
+      method: "POST",
+
+      headers: {
+
+        Authorization: `Bearer ${token}`
+
+      }
+
+    }
+
+  );
+
+  const data = await res.json();
+
+  alert(data.message || "Shipment Cancelled");
+
+}
 if(loading){
 
 return (
@@ -287,11 +427,43 @@ View
 
 </button>
 
-<button>
+<button onClick={() => createShipment(order.id)}>
 
-Print
+Shipment
 
 </button>
+
+<button onClick={() => printLabel(order.id)}>
+
+Label
+
+</button>
+
+<button onClick={() => trackShipment(order.id)}>
+
+Track
+
+</button>
+
+<button onClick={() => syncShipment(order.id)}>
+
+Sync
+
+</button>
+<button
+  onClick={() => downloadInvoice(order.id)}
+>
+
+Invoice
+
+</button>
+
+<button onClick={() => cancelShipment(order.id)}>
+
+Cancel
+
+</button>
+
 
 </div>
 
