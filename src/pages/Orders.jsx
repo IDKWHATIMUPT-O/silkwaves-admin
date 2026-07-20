@@ -13,6 +13,16 @@ selectedOrder,
 setSelectedOrder
 ]=useState(null);
 
+const [
+pendingStatusChange,
+setPendingStatusChange
+]=useState(null);
+
+const [
+sendingNotification,
+setSendingNotification
+]=useState(false);
+
 useEffect(()=>{
 
 async function load(){
@@ -105,6 +115,51 @@ console.log(err);
 }
 
 }
+
+async function notifyStatusChange(orderId) {
+
+  try {
+
+    await fetch(
+
+      `${import.meta.env.VITE_API_BASE_URL}/orders/${orderId}/notify-status`,
+
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+
+    );
+
+  } catch (err) {
+
+    console.log(err);
+
+  }
+
+}
+
+async function confirmStatusChange(shouldNotify) {
+
+  if (!pendingStatusChange) return;
+
+  const { orderId, status } = pendingStatusChange;
+
+  setSendingNotification(true);
+
+  await updateStatus(orderId, status);
+
+  if (shouldNotify) {
+    await notifyStatusChange(orderId);
+  }
+
+  setSendingNotification(false);
+  setPendingStatusChange(null);
+
+}
+
 async function downloadInvoice(orderId) {
 
   try {
@@ -371,10 +426,10 @@ order.status
 onChange={
 (e)=>
 
-updateStatus(
-order.id,
-e.target.value
-)
+setPendingStatusChange({
+  orderId: order.id,
+  status: e.target.value
+})
 
 }
 
@@ -579,6 +634,99 @@ null
 Close
 
 </button>
+
+</div>
+
+</div>
+
+)
+
+}
+
+{
+
+pendingStatusChange && (
+
+<div
+style={{
+
+position:'fixed',
+
+inset:0,
+
+background:
+'rgba(0,0,0,.4)',
+
+display:'flex',
+
+alignItems:
+'center',
+
+justifyContent:
+'center'
+
+}}
+
+>
+
+<div
+style={{
+
+background:
+'white',
+
+padding:
+'24px',
+
+borderRadius:
+'20px',
+
+width:
+'420px'
+
+}}
+
+>
+
+<h2>
+
+Status changed to {pendingStatusChange.status}
+
+</h2>
+
+<p>
+
+Send a status update email to the customer for this change?
+
+</p>
+
+<div
+style={{
+display:'flex',
+gap:'12px',
+marginTop:'20px'
+}}
+>
+
+<button
+disabled={sendingNotification}
+onClick={()=>confirmStatusChange(true)}
+>
+
+{sendingNotification ? 'Working...' : 'Yes, send email'}
+
+</button>
+
+<button
+disabled={sendingNotification}
+onClick={()=>confirmStatusChange(false)}
+>
+
+No, just update
+
+</button>
+
+</div>
 
 </div>
 

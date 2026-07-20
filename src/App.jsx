@@ -4,7 +4,8 @@ import {
   PackagePlus,
   PackageSearch,
   Truck,
-  Settings2
+  Settings2,
+  Users
 } from "lucide-react";
 import AdminLayout from './components/layout/AdminLayout.jsx';
 import Dashboard from './pages/Dashboard.jsx';
@@ -14,6 +15,7 @@ import Orders from './pages/Orders.jsx';
 import Login from './pages/Login.jsx';
 import Fulfillment from './pages/Fulfillment.jsx'; // ⭐ NEW
 import Settings from "./pages/Settings.jsx";
+import Customers from "./pages/Customers.jsx";
 import { getProducts } from './services/productsApi.js';
 
 const NAV_ITEMS = [
@@ -28,6 +30,12 @@ const NAV_ITEMS = [
     id: 'orders',
     label: 'Orders',
     icon: PackageSearch
+  },
+
+  {
+    id: 'customers',
+    label: 'Customers',
+    icon: Users
   },
 
   // ⭐ NEW
@@ -235,6 +243,12 @@ async function loadDashboard() {
       {activePage === 'orders' &&
 
         <Orders />
+
+      }
+
+      {activePage === 'customers' &&
+
+        <Customers />
 
       }
 
