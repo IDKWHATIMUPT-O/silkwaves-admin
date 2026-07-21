@@ -3,7 +3,7 @@ import { useState } from 'react';
 import ProductForm from '../components/products/ProductForm.jsx';
 import Button from '../components/ui/Button.jsx';
 
-export default function AddProduct({ onCreated, onNavigate }) {
+export default function AddProduct({ onCreated, onNavigate, canEdit = true }) {
   const [successMessage, setSuccessMessage] = useState('');
 
   async function handleCreate() {
@@ -32,7 +32,11 @@ export default function AddProduct({ onCreated, onNavigate }) {
             <h2>Add Saree Product</h2>
           </div>
         </div>
-        <ProductForm onSubmit={handleCreate} submitLabel="Submit Product" />
+        {canEdit ? (
+          <ProductForm onSubmit={handleCreate} submitLabel="Submit Product" />
+        ) : (
+          <div className="empty-state">You don't have permission to add products.</div>
+        )}
       </section>
     </section>
   );

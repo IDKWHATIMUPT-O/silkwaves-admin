@@ -8,7 +8,7 @@ function getProductId(product) {
   return product.id || product._id;
 }
 
-export default function ManageProducts({ error, isLoading, onProductsChanged, products }) {
+export default function ManageProducts({ error, isLoading, onProductsChanged, products, canEdit = true }) {
   const [editingProduct, setEditingProduct] = useState(null);
   const [actionError, setActionError] = useState('');
   const [isDeletingId, setIsDeletingId] = useState('');
@@ -69,7 +69,7 @@ export default function ManageProducts({ error, isLoading, onProductsChanged, pr
         {isLoading ? (
           <div className="loading-state">Loading products from API...</div>
         ) : (
-          <ProductTable onDelete={handleDelete} onEdit={setEditingProduct} products={products} />
+          <ProductTable onDelete={handleDelete} onEdit={setEditingProduct} products={products} canEdit={canEdit} />
         )}
       </section>
 

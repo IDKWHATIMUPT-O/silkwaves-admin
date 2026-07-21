@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-export default function Orders() {
+export default function Orders({ canEdit = true }) {
 const token = localStorage.getItem("token");
 const [orders,setOrders]=
 useState([]);
@@ -419,6 +419,8 @@ order.payment
 
 <select
 
+disabled={!canEdit}
+
 value={
 order.status
 }
@@ -482,7 +484,7 @@ View
 
 </button>
 
-<button onClick={() => createShipment(order.id)}>
+<button disabled={!canEdit} onClick={() => createShipment(order.id)}>
 
 Shipment
 
@@ -500,7 +502,7 @@ Track
 
 </button>
 
-<button onClick={() => syncShipment(order.id)}>
+<button disabled={!canEdit} onClick={() => syncShipment(order.id)}>
 
 Sync
 
@@ -513,7 +515,7 @@ Invoice
 
 </button>
 
-<button onClick={() => cancelShipment(order.id)}>
+<button disabled={!canEdit} onClick={() => cancelShipment(order.id)}>
 
 Cancel
 

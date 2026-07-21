@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export default function Settings() {
+export default function Settings({ canEdit = true }) {
 
   const [settings, setSettings] = useState({
 
@@ -188,7 +188,7 @@ useEffect(() => {
           onChange={(e)=>update("pincode",e.target.value)}
         />
 
-        <button onClick={saveSettings}>
+        <button onClick={saveSettings} disabled={!canEdit}>
 
           Save Settings
 

@@ -5,7 +5,8 @@ import {
   PackageSearch,
   Truck,
   Settings2,
-  Users
+  Users,
+  UserCog
 } from "lucide-react";
 import AdminLayout from './components/layout/AdminLayout.jsx';
 import Dashboard from './pages/Dashboard.jsx';
@@ -16,51 +17,67 @@ import Login from './pages/Login.jsx';
 import Fulfillment from './pages/Fulfillment.jsx'; // ⭐ NEW
 import Settings from "./pages/Settings.jsx";
 import Customers from "./pages/Customers.jsx";
+import Employees from "./pages/Employees.jsx";
 import { getProducts } from './services/productsApi.js';
+import { getMe } from './services/authApi.js';
 
 const NAV_ITEMS = [
 
   {
     id: 'dashboard',
     label: 'Dashboard',
-    icon: LayoutDashboard
+    icon: LayoutDashboard,
+    section: 'dashboard'
   },
 
   {
     id: 'orders',
     label: 'Orders',
-    icon: PackageSearch
+    icon: PackageSearch,
+    section: 'orders'
   },
 
   {
     id: 'customers',
     label: 'Customers',
-    icon: Users
+    icon: Users,
+    section: 'customers'
   },
 
   // ⭐ NEW
   {
     id: 'fulfillment',
     label: 'Fulfillment',
-    icon: Truck
+    icon: Truck,
+    section: 'fulfillment'
   },
 
   {
     id: 'add-product',
     label: 'Add Product',
-    icon: PackagePlus
+    icon: PackagePlus,
+    section: 'products'
   },
 
   {
     id: 'manage-products',
     label: 'Manage Products',
-    icon: PackageSearch
+    icon: PackageSearch,
+    section: 'products'
   },
 
   {
     id: "settings",
     label: "Settings",
-    icon: Settings2
+    icon: Settings2,
+    section: 'settings'
+  },
+
+  {
+    id: 'employees',
+    label: 'Employees',
+    icon: UserCog,
+    adminOnly: true
   }
 ];
 
@@ -73,6 +90,8 @@ export default function App() {
 useState(
   !!localStorage.getItem("token")
 );
+
+  const [account, setAccount] = useState(null);
 
   const [products, setProducts] =
     useState([]);
@@ -158,12 +177,70 @@ async function loadDashboard() {
   }
 
 }
+
+  async function loadAccount() {
+
+    try {
+
+      const me = await getMe();
+      setAccount(me);
+
+    } catch (err) {
+
+      console.error(err);
+
+    }
+
+  }
+
   useEffect(() => {
+
+  if (!isLoggedIn) return;
 
   loadProducts();
   loadDashboard();
+  loadAccount();
 
-}, []);
+}, [isLoggedIn]);
+
+  const isAdmin = account?.role === 'admin';
+
+  function canView(section) {
+    if (!account) return false;
+    if (isAdmin) return true;
+    return !!account.permissions?.[section]?.view;
+  }
+
+  function canEdit(section) {
+    if (!account) return false;
+    if (isAdmin) return true;
+    return !!account.permissions?.[section]?.edit;
+  }
+
+  const visibleNavItems = useMemo(
+
+    () => NAV_ITEMS.filter((item) => {
+      if (item.adminOnly) return isAdmin;
+      return canView(item.section);
+    }),
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [account]
+
+  );
+
+  useEffect(() => {
+
+    if (!account) return;
+
+    const stillVisible = visibleNavItems.some((item) => item.id === activePage);
+
+    if (!stillVisible && visibleNavItems.length > 0) {
+      setActivePage(visibleNavItems[0].id);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account]);
 
   const pageTitle =
     useMemo(
@@ -199,7 +276,7 @@ async function loadDashboard() {
     <AdminLayout
 
       activePage={activePage}
-      navItems={NAV_ITEMS}
+      navItems={visibleNavItems}
       onNavigate={setActivePage}
       pageTitle={pageTitle}
 
@@ -208,6 +285,7 @@ async function loadDashboard() {
   localStorage.removeItem("token");
 
   setIsLoggedIn(false);
+  setAccount(null);
 
 }}
 
@@ -235,6 +313,7 @@ async function loadDashboard() {
 
           onCreated={loadProducts}
           onNavigate={setActivePage}
+          canEdit={canEdit('products')}
 
         />
 
@@ -242,7 +321,7 @@ async function loadDashboard() {
 
       {activePage === 'orders' &&
 
-        <Orders />
+        <Orders canEdit={canEdit('orders')} />
 
       }
 
@@ -256,12 +335,12 @@ async function loadDashboard() {
 
       {activePage === 'fulfillment' &&
 
-        <Fulfillment />
+        <Fulfillment canEdit={canEdit('fulfillment')} />
 
       }
 {activePage==="settings" &&
 
-<Settings/>
+<Settings canEdit={canEdit('settings')} />
 
 }
       {activePage === 'manage-products' && (
@@ -272,8 +351,15 @@ async function loadDashboard() {
           isLoading={isLoading}
           onProductsChanged={loadProducts}
           products={products}
+          canEdit={canEdit('products')}
 
         />
+
+      )}
+
+      {activePage === 'employees' && isAdmin && (
+
+        <Employees />
 
       )}
 

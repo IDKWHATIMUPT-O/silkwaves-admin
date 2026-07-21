@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 const API = import.meta.env.VITE_API_BASE_URL;
 const token = localStorage.getItem("token");
 
-export default function Fulfillment() {
+export default function Fulfillment({ canEdit = true }) {
 
   const [orders, setOrders] = useState([]);
 const [selectedOrder, setSelectedOrder] = useState(null);
@@ -479,6 +479,7 @@ Invoice
 </button>
 
 <button
+disabled={!canEdit}
 onClick={()=>
 createShipment(selectedOrder.id)
 }
@@ -509,6 +510,7 @@ Track
 </button>
 
 <button
+disabled={!canEdit}
 onClick={()=>
 syncShipment(selectedOrder.id)
 }
@@ -519,6 +521,7 @@ Sync
 </button>
 
 <button
+disabled={!canEdit}
 onClick={()=>
 cancelShipment(selectedOrder.id)
 }

@@ -12,7 +12,7 @@ function getProductImage(product) {
   );
 }
 
-export default function ProductTable({ onDelete, onEdit, products }) {
+export default function ProductTable({ onDelete, onEdit, products, canEdit = true }) {
   if (!products.length) {
     return (
       <div className="empty-state">
@@ -77,10 +77,10 @@ product.stock
 </td>
               <td>
                 <div className="table-actions">
-                  <button aria-label={`Edit ${product.title}`} onClick={() => onEdit(product)} type="button">
+                  <button aria-label={`Edit ${product.title}`} disabled={!canEdit} onClick={() => onEdit(product)} type="button">
                     <Edit3 size={16} />
                   </button>
-                  <button aria-label={`Delete ${product.title}`} onClick={() => onDelete(product)} type="button">
+                  <button aria-label={`Delete ${product.title}`} disabled={!canEdit} onClick={() => onDelete(product)} type="button">
                     <Trash2 size={16} />
                   </button>
                 </div>

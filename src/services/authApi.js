@@ -24,3 +24,23 @@ export async function login(email, password) {
   return data;
 
 }
+
+export async function getMe() {
+
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(`${API}/auth/me`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Unable to load account");
+  }
+
+  return data;
+
+}
