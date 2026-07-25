@@ -1,4 +1,23 @@
 import { useEffect, useState } from 'react';
+import {
+  Eye,
+  FileText,
+  RefreshCw,
+  Tag,
+  Truck,
+  Waypoints,
+  XCircle,
+} from 'lucide-react';
+import Modal from '../components/ui/Modal.jsx';
+
+const STATUS_OPTIONS = ['Placed', 'Packed', 'Printed', 'Shipped', 'Delivered', 'Cancelled'];
+
+function paymentPillClass(payment) {
+  if (payment === 'Paid') return 'category-pill';
+  if (payment === 'Pending') return 'category-pill category-pill--pending';
+  if (payment === 'Failed') return 'category-pill category-pill--failed';
+  return 'category-pill category-pill--neutral';
+}
 
 export default function Orders({ canEdit = true }) {
 const token = localStorage.getItem("token");
@@ -365,174 +384,93 @@ Actions
 
 <tbody>
 
-{
+{orders.map((order) => (
 
-orders.map(
-(order)=>(
+  <tr key={order.id}>
 
-<tr
-key={order.id}
->
+    <td>
+      <strong>{order.id}</strong>
+    </td>
 
-<td>
+    <td>{order.customer}</td>
 
-<strong>
-{order.id}
-</strong>
+    <td>
+      ₹{Number(order.amount).toLocaleString('en-IN')}
+    </td>
 
-</td>
+    <td>
+      <span className={paymentPillClass(order.payment)}>{order.payment}</span>
+    </td>
 
-<td>
+    <td>
+      <select
+        className="status-select"
+        disabled={!canEdit}
+        value={order.status}
+        onChange={(e) =>
+          setPendingStatusChange({
+            orderId: order.id,
+            status: e.target.value,
+          })
+        }
+      >
+        {STATUS_OPTIONS.map((status) => (
+          <option key={status}>{status}</option>
+        ))}
+      </select>
+    </td>
 
-{order.customer}
+    <td>
+      <div className="table-actions">
+        <button title="View" onClick={() => setSelectedOrder(order)} type="button">
+          <Eye size={16} />
+        </button>
 
-</td>
+        <button
+          title="Create Shipment"
+          disabled={!canEdit}
+          onClick={() => createShipment(order.id)}
+          type="button"
+        >
+          <Truck size={16} />
+        </button>
 
-<td>
+        <button title="Print Label" onClick={() => printLabel(order.id)} type="button">
+          <Tag size={16} />
+        </button>
 
-₹{
-Number(
-order.amount
-).toLocaleString(
-'en-IN'
-)
-}
+        <button title="Track Shipment" onClick={() => trackShipment(order.id)} type="button">
+          <Waypoints size={16} />
+        </button>
 
-</td>
+        <button
+          title="Sync Shipment"
+          disabled={!canEdit}
+          onClick={() => syncShipment(order.id)}
+          type="button"
+        >
+          <RefreshCw size={16} />
+        </button>
 
-<td>
+        <button title="Download Invoice" onClick={() => downloadInvoice(order.id)} type="button">
+          <FileText size={16} />
+        </button>
 
-<span
-className="category-pill"
+        <button
+          title="Cancel Shipment"
+          className="is-danger"
+          disabled={!canEdit}
+          onClick={() => cancelShipment(order.id)}
+          type="button"
+        >
+          <XCircle size={16} />
+        </button>
+      </div>
+    </td>
 
->
+  </tr>
 
-{
-order.payment
-}
-
-</span>
-
-</td>
-
-<td>
-
-<select
-
-disabled={!canEdit}
-
-value={
-order.status
-}
-
-onChange={
-(e)=>
-
-setPendingStatusChange({
-  orderId: order.id,
-  status: e.target.value
-})
-
-}
-
->
-
-<option>
-Placed
-</option>
-
-<option>
-Packed
-</option>
-
-<option>
-Printed
-</option>
-
-<option>
-Shipped
-</option>
-
-<option>
-Delivered
-</option>
-
-<option>
-Cancelled
-</option>
-
-</select>
-
-</td>
-
-<td>
-
-<div
-className="table-actions"
->
-
-<button
-onClick={()=>
-setSelectedOrder(
-order
-)
-}
-
->
-
-View
-
-</button>
-
-<button disabled={!canEdit} onClick={() => createShipment(order.id)}>
-
-Shipment
-
-</button>
-
-<button onClick={() => printLabel(order.id)}>
-
-Label
-
-</button>
-
-<button onClick={() => trackShipment(order.id)}>
-
-Track
-
-</button>
-
-<button disabled={!canEdit} onClick={() => syncShipment(order.id)}>
-
-Sync
-
-</button>
-<button
-  onClick={() => downloadInvoice(order.id)}
->
-
-Invoice
-
-</button>
-
-<button disabled={!canEdit} onClick={() => cancelShipment(order.id)}>
-
-Cancel
-
-</button>
-
-
-</div>
-
-</td>
-
-</tr>
-
-)
-
-)
-
-}
+))}
 
 </tbody>
 
@@ -540,203 +478,61 @@ Cancel
 
 </div>
 
-{
-
-selectedOrder && (
-
-<div
-style={{
-
-position:'fixed',
-
-inset:0,
-
-background:
-'rgba(0,0,0,.4)',
-
-display:'flex',
-
-alignItems:
-'center',
-
-justifyContent:
-'center'
-
-}}
-
+<Modal
+  isOpen={!!selectedOrder}
+  onClose={() => setSelectedOrder(null)}
+  title={selectedOrder ? `Order ${selectedOrder.id}` : ''}
 >
+  {selectedOrder && (
+    <div className="order-detail">
+      <dl>
+        <dt>Customer</dt>
+        <dd>{selectedOrder.customer}</dd>
 
-<div
-style={{
+        <dt>Amount</dt>
+        <dd>₹{Number(selectedOrder.amount).toLocaleString('en-IN')}</dd>
 
-background:
-'white',
+        <dt>Payment</dt>
+        <dd>
+          <span className={paymentPillClass(selectedOrder.payment)}>{selectedOrder.payment}</span>
+        </dd>
 
-padding:
-'24px',
+        <dt>Status</dt>
+        <dd>{selectedOrder.status}</dd>
+      </dl>
+    </div>
+  )}
+</Modal>
 
-borderRadius:
-'20px',
-
-width:
-'500px'
-
-}}
-
+<Modal
+  isOpen={!!pendingStatusChange}
+  onClose={() => !sendingNotification && setPendingStatusChange(null)}
+  title={pendingStatusChange ? `Status changed to ${pendingStatusChange.status}` : ''}
 >
+  <div className="status-confirm">
+    <p>Send a status update email to the customer for this change?</p>
 
-<h2>
-Order Details
-</h2>
+    <div className="form-actions">
+      <button
+        className="button button--primary"
+        disabled={sendingNotification}
+        onClick={() => confirmStatusChange(true)}
+        type="button"
+      >
+        {sendingNotification ? 'Working...' : 'Yes, send email'}
+      </button>
 
-<p>
-ID:
-{
-selectedOrder.id
-}
-</p>
-
-<p>
-Customer:
-{
-selectedOrder.customer
-}
-</p>
-
-<p>
-Amount:
-₹{
-selectedOrder.amount
-}
-</p>
-
-<p>
-Payment:
-{
-selectedOrder.payment
-}
-</p>
-
-<p>
-Status:
-{
-selectedOrder.status
-}
-</p>
-
-<button
-onClick={()=>
-setSelectedOrder(
-null
-)
-}
-
->
-
-Close
-
-</button>
-
-</div>
-
-</div>
-
-)
-
-}
-
-{
-
-pendingStatusChange && (
-
-<div
-style={{
-
-position:'fixed',
-
-inset:0,
-
-background:
-'rgba(0,0,0,.4)',
-
-display:'flex',
-
-alignItems:
-'center',
-
-justifyContent:
-'center'
-
-}}
-
->
-
-<div
-style={{
-
-background:
-'white',
-
-padding:
-'24px',
-
-borderRadius:
-'20px',
-
-width:
-'420px'
-
-}}
-
->
-
-<h2>
-
-Status changed to {pendingStatusChange.status}
-
-</h2>
-
-<p>
-
-Send a status update email to the customer for this change?
-
-</p>
-
-<div
-style={{
-display:'flex',
-gap:'12px',
-marginTop:'20px'
-}}
->
-
-<button
-disabled={sendingNotification}
-onClick={()=>confirmStatusChange(true)}
->
-
-{sendingNotification ? 'Working...' : 'Yes, send email'}
-
-</button>
-
-<button
-disabled={sendingNotification}
-onClick={()=>confirmStatusChange(false)}
->
-
-No, just update
-
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-)
-
-}
+      <button
+        className="button button--secondary"
+        disabled={sendingNotification}
+        onClick={() => confirmStatusChange(false)}
+        type="button"
+      >
+        No, just update
+      </button>
+    </div>
+  </div>
+</Modal>
 
 </div>
 
