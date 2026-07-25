@@ -21,6 +21,7 @@ function normalizeProduct(product) {
   return {
     title: product?.title || '',
     price: product?.price ?? '',
+    stock: product?.stock ?? '',
     category: product?.category || PRODUCT_CATEGORIES[0],
     description: product?.description || '',
     coverImage: null,
@@ -121,7 +122,7 @@ return;
 
     const endpoint =
 isEditing
-? `${import.meta.env.VITE_API_BASE_URL}/products/${initialProduct.id}`
+? `${import.meta.env.VITE_API_BASE_URL}/products/${initialProduct.id || initialProduct._id}`
 : `${import.meta.env.VITE_API_BASE_URL}/products`;
 
 const method =
