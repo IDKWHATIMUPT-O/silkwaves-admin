@@ -1,12 +1,26 @@
 import { useEffect, useState } from 'react';
+import { Download } from 'lucide-react';
 import Modal from '../components/ui/Modal.jsx';
 import { getCustomers, getCustomer } from '../services/customersApi.js';
+import { downloadFile } from '../services/reportsApi.js';
 
-export default function Customers() {
+export default function Customers({ isAdmin = false }) {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
+  const [exporting, setExporting] = useState(false);
+
+  async function handleExport() {
+    setExporting(true);
+    try {
+      await downloadFile('/admin/customers/export', 'silkwaves-customers.xlsx');
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setExporting(false);
+    }
+  }
 
   useEffect(() => {
     async function load() {
@@ -43,7 +57,15 @@ export default function Customers() {
   return (
     <div>
       <span className="eyebrow">CUSTOMER MANAGEMENT</span>
-      <h1>Customers</h1>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <h1>Customers</h1>
+        {isAdmin && (
+          <button className="button button--secondary" onClick={handleExport} disabled={exporting}>
+            <Download size={16} />
+            {exporting ? 'Exporting...' : 'Export to Excel'}
+          </button>
+        )}
+      </div>
 
       <div className="table-shell">
         <table className="product-table">

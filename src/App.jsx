@@ -6,7 +6,8 @@ import {
   Truck,
   Settings2,
   Users,
-  UserCog
+  UserCog,
+  BarChart3
 } from "lucide-react";
 import AdminLayout from './components/layout/AdminLayout.jsx';
 import Dashboard from './pages/Dashboard.jsx';
@@ -18,6 +19,7 @@ import Fulfillment from './pages/Fulfillment.jsx'; // ⭐ NEW
 import Settings from "./pages/Settings.jsx";
 import Customers from "./pages/Customers.jsx";
 import Employees from "./pages/Employees.jsx";
+import Reports from "./pages/Reports.jsx";
 import { getProducts } from './services/productsApi.js';
 import { getMe } from './services/authApi.js';
 
@@ -71,6 +73,13 @@ const NAV_ITEMS = [
     label: "Settings",
     icon: Settings2,
     section: 'settings'
+  },
+
+  {
+    id: 'reports',
+    label: 'Reports',
+    icon: BarChart3,
+    section: 'reports'
   },
 
   {
@@ -321,13 +330,19 @@ async function loadDashboard() {
 
       {activePage === 'orders' &&
 
-        <Orders canEdit={canEdit('orders')} />
+        <Orders canEdit={canEdit('orders')} isAdmin={isAdmin} />
 
       }
 
       {activePage === 'customers' &&
 
-        <Customers />
+        <Customers isAdmin={isAdmin} />
+
+      }
+
+      {activePage === 'reports' &&
+
+        <Reports isAdmin={isAdmin} />
 
       }
 
@@ -352,6 +367,7 @@ async function loadDashboard() {
           onProductsChanged={loadProducts}
           products={products}
           canEdit={canEdit('products')}
+          isAdmin={isAdmin}
 
         />
 

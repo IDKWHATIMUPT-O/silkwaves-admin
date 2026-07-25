@@ -9,6 +9,7 @@ const SECTIONS = [
   { id: 'products', label: 'Products' },
   { id: 'customers', label: 'Customers' },
   { id: 'settings', label: 'Settings' },
+  { id: 'reports', label: 'Reports' },
 ];
 
 function emptyPermissions() {

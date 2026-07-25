@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
+  Download,
   Eye,
   FileText,
   RefreshCw,
@@ -9,6 +10,7 @@ import {
   XCircle,
 } from 'lucide-react';
 import Modal from '../components/ui/Modal.jsx';
+import { downloadFile } from '../services/reportsApi.js';
 
 const STATUS_OPTIONS = ['Placed', 'Packed', 'Printed', 'Shipped', 'Delivered', 'Cancelled'];
 
@@ -19,8 +21,20 @@ function paymentPillClass(payment) {
   return 'category-pill category-pill--neutral';
 }
 
-export default function Orders({ canEdit = true }) {
+export default function Orders({ canEdit = true, isAdmin = false }) {
 const token = localStorage.getItem("token");
+const [exporting, setExporting] = useState(false);
+
+async function handleExportOrders() {
+  setExporting(true);
+  try {
+    await downloadFile('/orders/export', 'silkwaves-orders.xlsx');
+  } catch (err) {
+    alert(err.message);
+  } finally {
+    setExporting(false);
+  }
+}
 const [orders,setOrders]=
 useState([]);
 
@@ -342,9 +356,15 @@ return (
 ORDER MANAGEMENT
 </span>
 
-<h1>
-Manage Orders
-</h1>
+<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+  <h1>Manage Orders</h1>
+  {isAdmin && (
+    <button className="button button--secondary" onClick={handleExportOrders} disabled={exporting}>
+      <Download size={16} />
+      {exporting ? 'Exporting...' : 'Export to Excel'}
+    </button>
+  )}
+</div>
 
 <div className="table-shell">
 
