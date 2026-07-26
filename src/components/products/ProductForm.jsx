@@ -6,6 +6,7 @@ import Button from '../ui/Button.jsx';
 const EMPTY_PRODUCT = {
 title:'',
 price:'',
+compareAtPrice:'',
 stock:'',
 
 category:
@@ -21,6 +22,7 @@ function normalizeProduct(product) {
   return {
     title: product?.title || '',
     price: product?.price ?? '',
+    compareAtPrice: product?.compareAtPrice ?? '',
     stock: product?.stock ?? '',
     category: product?.category || PRODUCT_CATEGORIES[0],
     description: product?.description || '',
@@ -102,6 +104,7 @@ return;
 
     submitData.append('title', formData.title);
     submitData.append('price', formData.price);
+    submitData.append('compareAtPrice', formData.compareAtPrice);
     submitData.append("stock",formData.stock);
     submitData.append('category', formData.category);
     submitData.append('description', formData.description);
@@ -190,6 +193,19 @@ const res = await fetch(
             value={formData.price}
           />
         </label>
+
+        <label className="field">
+          <span>Original Price (optional, for sale badge)</span>
+          <input
+            min="0"
+            onChange={(event) => updateField('compareAtPrice', event.target.value)}
+            placeholder="19999"
+            step="0.01"
+            type="number"
+            value={formData.compareAtPrice}
+          />
+        </label>
+
         <label className="field">
 
   <span>Stock</span>

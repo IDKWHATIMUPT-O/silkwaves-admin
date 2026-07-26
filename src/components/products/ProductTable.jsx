@@ -61,6 +61,18 @@ style:'currency',
 currency:'INR'
 }
 )}
+{product.compareAtPrice > product.price && (
+  <>
+    <br />
+    <span className="table-muted" style={{ textDecoration: 'line-through' }}>
+      {Number(product.compareAtPrice).toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}
+    </span>
+    {' '}
+    <span style={{ color: 'var(--color-danger)', fontWeight: 700 }}>
+      -{Math.round((1 - product.price / product.compareAtPrice) * 100)}%
+    </span>
+  </>
+)}
 </td>
 
 <td>
