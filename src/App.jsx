@@ -7,7 +7,8 @@ import {
   Settings2,
   Users,
   UserCog,
-  BarChart3
+  BarChart3,
+  FileText
 } from "lucide-react";
 import AdminLayout from './components/layout/AdminLayout.jsx';
 import Dashboard from './pages/Dashboard.jsx';
@@ -20,6 +21,7 @@ import Settings from "./pages/Settings.jsx";
 import Customers from "./pages/Customers.jsx";
 import Employees from "./pages/Employees.jsx";
 import Reports from "./pages/Reports.jsx";
+import Vouchers from "./pages/Vouchers.jsx";
 import { getProducts } from './services/productsApi.js';
 import { getMe } from './services/authApi.js';
 
@@ -80,6 +82,13 @@ const NAV_ITEMS = [
     label: 'Reports',
     icon: BarChart3,
     section: 'reports'
+  },
+
+  {
+    id: 'vouchers',
+    label: 'Vouchers',
+    icon: FileText,
+    section: 'orders'
   },
 
   {
@@ -343,6 +352,12 @@ async function loadDashboard() {
       {activePage === 'reports' &&
 
         <Reports isAdmin={isAdmin} />
+
+      }
+
+      {activePage === 'vouchers' &&
+
+        <Vouchers canEdit={canEdit('orders')} />
 
       }
 
