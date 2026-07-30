@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ImagePlus, Images, Save } from 'lucide-react';
 import { PRODUCT_CATEGORIES } from '../../constants/categories.js';
+import { TALLY_GROUPS } from '../../constants/tallyGroups.js';
 import Button from '../ui/Button.jsx';
 
 const EMPTY_PRODUCT = {
@@ -11,6 +12,8 @@ stock:'',
 
 category:
 PRODUCT_CATEGORIES[0],
+
+tallyGroup: '',
 
 description:'',
 
@@ -25,6 +28,7 @@ function normalizeProduct(product) {
     compareAtPrice: product?.compareAtPrice ?? '',
     stock: product?.stock ?? '',
     category: product?.category || PRODUCT_CATEGORIES[0],
+    tallyGroup: product?.tallyGroup || '',
     description: product?.description || '',
     coverImage: null,
     galleryImages: [],
@@ -107,6 +111,7 @@ return;
     submitData.append('compareAtPrice', formData.compareAtPrice);
     submitData.append("stock",formData.stock);
     submitData.append('category', formData.category);
+    submitData.append('tallyGroup', formData.tallyGroup);
     submitData.append('description', formData.description);
 
     if (formData.coverImage) {
@@ -238,6 +243,21 @@ const res = await fetch(
             {PRODUCT_CATEGORIES.map((category) => (
               <option key={category} value={category}>
                 {category}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="field">
+          <span>Tally Stock Group</span>
+          <select
+            onChange={(event) => updateField('tallyGroup', event.target.value)}
+            value={formData.tallyGroup}
+          >
+            <option value="">Not set</option>
+            {TALLY_GROUPS.map((group) => (
+              <option key={group} value={group}>
+                {group}
               </option>
             ))}
           </select>
