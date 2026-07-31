@@ -14,6 +14,9 @@ export default function Vouchers({ canEdit = true }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [uploadingId, setUploadingId] = useState(null);
+  const [syncEnabled, setSyncEnabled] = useState(true);
+  const [syncLoading, setSyncLoading] = useState(true);
+  const [syncSaving, setSyncSaving] = useState(false);
   const fileInputs = useRef({});
 
   useEffect(() => {
@@ -40,8 +43,50 @@ export default function Vouchers({ canEdit = true }) {
       }
     }
 
+    async function loadSyncSetting() {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/setting`);
+        if (!res.ok) throw new Error('Failed to load settings');
+        const data = await res.json();
+        setSyncEnabled(data.tallySyncEnabled !== false);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setSyncLoading(false);
+      }
+    }
+
     load();
+    loadSyncSetting();
   }, []);
+
+  async function handleToggleSync() {
+    const next = !syncEnabled;
+    setSyncSaving(true);
+    setError('');
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/setting`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ tallySyncEnabled: next }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Failed to update Tally sync setting');
+      }
+
+      setSyncEnabled(next);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSyncSaving(false);
+    }
+  }
 
   async function handleFileSelected(orderId, file) {
     if (!file) return;
@@ -82,8 +127,27 @@ export default function Vouchers({ canEdit = true }) {
 
   return (
     <div>
-      <span className="eyebrow">TALLY VOUCHERS</span>
-      <h1>Vouchers</h1>
+      <div className="page-header-row">
+        <div>
+          <span className="eyebrow">TALLY VOUCHERS</span>
+          <h1>Vouchers</h1>
+        </div>
+
+        <label className={`toggle-switch${syncSaving ? ' toggle-switch--saving' : ''}`} title="Turn Tally sync on or off">
+          <input
+            checked={syncEnabled}
+            disabled={!canEdit || syncLoading || syncSaving}
+            onChange={handleToggleSync}
+            type="checkbox"
+          />
+          <span className="toggle-switch__track">
+            <span className="toggle-switch__thumb" />
+          </span>
+          <span className="toggle-switch__label">
+            {syncLoading ? 'Loading…' : syncEnabled ? 'Tally Sync: On' : 'Tally Sync: Off'}
+          </span>
+        </label>
+      </div>
 
       {error && <div className="system-alert">{error}</div>}
 
